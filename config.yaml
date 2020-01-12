@@ -1,0 +1,5 @@
+csvfile: 'bunnies.csv'
+bucket_name: 'bunnybot'
+# image_url: 'https://console.cloud.google.com/storage/browser/bunnybot/'
+image_url: 'http://35.239.125.114/'
+external_ip: '35.239.125.114'

@@ -1,0 +1,7 @@
+*.db
+*.jar
+*.jpg
+*.mp4
+debug.log
+remove.txt
+slack.yaml
