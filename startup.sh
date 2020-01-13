@@ -20,28 +20,13 @@ find . -name '*.mp4' -type f -delete
 # Label images
 python3 label_photo.py
 
-# while read b; do
-#  gsutil -m cp -r $b gs://bunnybot
-#  cd $b'/'
-#  ls -t | tail -n +4 | xargs rm --
-#  cd ..
-# done <bunnies.csv
+while read b; do
+  gsutil -m cp -r $b gs://bunnybot
+done <bunnies.csv
 
-# repeat for all directories
-gsutil -m cp -r louisaandbenny gs://bunnybot
-cd louisaandbenny/
-ls -t | tail -n +4 | xargs rm --
-cd ..
-
-gsutil -m cp -r cukipukii gs://bunnybot
-cd cukipukii/
-ls -t | tail -n +4 | xargs rm --
-cd ..
-
-gsutil -m cp -r bunny._lovers gs://bunnybot
-cd bunny._lovers
-ls -t | tail -n +4 | xargs rm --
-cd ..
+while read b; do
+  ls -td $b/* | tail -n +4 | xargs rm --;
+done <bunnies.csv
 
 # send to slack
 # Upload latest slack.yaml file
