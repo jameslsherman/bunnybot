@@ -1,4 +1,7 @@
+import datetime
+import os.path
 import requests
+import subprocess
 import yaml
 
 from google.cloud import firestore
@@ -36,7 +39,17 @@ def get_image():
 #-----------------------------------------------------------------------
 def post_image(username, image):
 
-    image_location = username + '/' + image + ".jpg"
+    image_location = username + '/' + image + '.jpg'
+
+    if not os.path.exists(image_location):
+        bash_command = 'gsutil cp gs://bunnybot/' + image_location + ' ' + image_location
+        print(u'bash_command: {}'.format(bash_command))
+
+        process = subprocess.Popen(bash_command.split(),
+                                   stdout=subprocess.PIPE)
+        output, error = process.communicate()
+        print(u'output: {}'.format(output))
+        print(u'error: {}'.format(error))
 
     url = slack['api_url'] + 'files.upload'
     headers = {'Authorization': 'Bearer ' + slack['oauth_access_token']}

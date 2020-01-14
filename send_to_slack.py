@@ -24,7 +24,6 @@ def main():
 
     post_image(image)
 
-
 #-----------------------------------------------------------------------
 def get_image():
 
@@ -43,7 +42,6 @@ def get_image():
 
     return result.to_dict()['username'], result.id
 
-
 #-----------------------------------------------------------------------
 def copy_to_webserver(result):
 
@@ -52,7 +50,7 @@ def copy_to_webserver(result):
         bash_command = "sudo gsutil cp gs://" + config[
             'bucket_name'] + "/" + result.to_dict(
             )['username'] + "/" + result.id + ".jpg /var/www/html/. "
-        print(u'bashCommand: {}'.format(bash_command))
+        print(u'bash_command: {}'.format(bash_command))
 
         process = subprocess.Popen(bash_command.split(),
                                    stdout=subprocess.PIPE)
@@ -61,7 +59,6 @@ def copy_to_webserver(result):
         print(u'error: {}'.format(error))
     else:
         print("Could not connect to web server")
-
 
 #-----------------------------------------------------------------------
 def post_image(image):
@@ -101,7 +98,6 @@ def post_image(image):
 
     print(r.text)
 
-
 #-----------------------------------------------------------------------
 def update_rabbit_cuteness(image):
 
@@ -115,7 +111,6 @@ def update_rabbit_cuteness(image):
 
     # merge=true to add to existing document and not overwrite
     doc_ref.set(data, merge=True)
-
 
 #-----------------------------------------------------------------------
 if __name__ == "__main__":
