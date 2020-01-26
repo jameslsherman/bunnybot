@@ -11,6 +11,7 @@ import google.cloud.exceptions
 config = yaml.safe_load(open("config.yaml"))
 slack = yaml.safe_load(open("slack.yaml"))
 
+
 #-----------------------------------------------------------------------
 def main():
 
@@ -19,6 +20,7 @@ def main():
     print(image)
 
     post_image(username, image)
+
 
 #-----------------------------------------------------------------------
 def get_image():
@@ -34,16 +36,20 @@ def get_image():
     for result in results:
         print(u'{} => {}'.format(result.id, result.to_dict()))
         print('\n')
+        copy_to_local(result.to_dict()['username'], result.id)
 
     return result.to_dict()['username'], result.id
 
+
 #-----------------------------------------------------------------------
-def post_image(username, image):
+def copy_to_local(username, image):
 
     image_location = username + '/' + image + '.jpg'
 
     if not os.path.exists(image_location):
-        bash_command = 'sudo gsutil cp gs://bunnybot/' + image_location + ' ' + image_location
+        # bash_command = 'sudo gsutil cp gs://' + config['bucket_name'] + '/' + image_location + ' ' + image_location
+        bash_command = 'gsutil cp gs://' + config[
+            'bucket_name'] + '/' + image_location + ' ' + image_location
         print(u'bash_command: {}'.format(bash_command))
 
         process = subprocess.Popen(bash_command.split(),
@@ -51,6 +57,12 @@ def post_image(username, image):
         output, error = process.communicate()
         print(u'output: {}'.format(output))
         print(u'error: {}'.format(error))
+
+
+#-----------------------------------------------------------------------
+def post_image(username, image):
+
+    image_location = username + '/' + image + '.jpg'
 
     url = slack['api_url'] + 'files.upload'
     headers = {'Authorization': 'Bearer ' + slack['oauth_access_token']}
@@ -72,6 +84,7 @@ def post_image(username, image):
 
     print(r.text)
 
+
 #-----------------------------------------------------------------------
 def update_rabbit_cuteness(image):
 
@@ -85,6 +98,7 @@ def update_rabbit_cuteness(image):
 
     # merge=true to add to existing document and not overwrite
     doc_ref.set(data, merge=True)
+
 
 #-----------------------------------------------------------------------
 if __name__ == "__main__":

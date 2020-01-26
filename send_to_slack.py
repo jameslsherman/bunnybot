@@ -24,6 +24,7 @@ def main():
 
     post_image(image)
 
+
 #-----------------------------------------------------------------------
 def get_image():
 
@@ -38,18 +39,18 @@ def get_image():
     for result in results:
         print(u'{} => {}'.format(result.id, result.to_dict()))
         print('\n')
-        copy_to_webserver(result)
+        copy_to_webserver(result.to_dict()['username'], result.id)
 
     return result.to_dict()['username'], result.id
 
+
 #-----------------------------------------------------------------------
-def copy_to_webserver(result):
+def copy_to_webserver(username, image):
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     if not s.connect((config['external_ip'], 80)):
-        bash_command = "sudo gsutil cp gs://" + config[
-            'bucket_name'] + "/" + result.to_dict(
-            )['username'] + "/" + result.id + ".jpg /var/www/html/. "
+        bash_command = 'sudo gsutil cp gs://' + config[
+            'bucket_name'] + '/' + username + '/' + image + '.jpg /var/www/html/. '
         print(u'bash_command: {}'.format(bash_command))
 
         process = subprocess.Popen(bash_command.split(),
@@ -59,6 +60,7 @@ def copy_to_webserver(result):
         print(u'error: {}'.format(error))
     else:
         print("Could not connect to web server")
+
 
 #-----------------------------------------------------------------------
 def post_image(image):
@@ -98,6 +100,7 @@ def post_image(image):
 
     print(r.text)
 
+
 #-----------------------------------------------------------------------
 def update_rabbit_cuteness(image):
 
@@ -111,6 +114,7 @@ def update_rabbit_cuteness(image):
 
     # merge=true to add to existing document and not overwrite
     doc_ref.set(data, merge=True)
+
 
 #-----------------------------------------------------------------------
 if __name__ == "__main__":
