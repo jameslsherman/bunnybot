@@ -48,7 +48,7 @@ def copy_to_local(username, image):
 
     if not os.path.exists(image_location):
         # bash_command = 'sudo gsutil cp gs://' + config['bucket_name'] + '/' + image_location + ' ' + image_location
-        bash_command = 'gsutil cp gs://' + config[
+        bash_command = 'sudo gsutil cp gs://' + config[
             'bucket_name'] + '/' + image_location + ' ' + image_location
         print(u'bash_command: {}'.format(bash_command))
 
