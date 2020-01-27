@@ -31,4 +31,5 @@ done <bunnies.csv
 # send to slack
 # Upload latest slack.yaml file
 gsutil cp gs://bunnybot_secret/*.yaml .
-python3 send_to_slack.py
+# python3 send_to_slack.py
+python3 upload_to_slack.py
