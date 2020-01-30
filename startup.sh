@@ -5,6 +5,8 @@ rm -fr temp
 cd bunnybot/
 sudo apt -y update
 sudo apt -y install python3-pip
+
+# pip freeze > requirements9.txt
 pip3 install -r requirements.txt
 
 # yapf <- yet another python formater

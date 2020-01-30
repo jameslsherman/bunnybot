@@ -137,7 +137,10 @@ def insert_annotations(username, absolute_path, image, annotations):
 
     if sum_rabbit_cuteness > 0:
         data['rabbit_cuteness'] = sum_rabbit_cuteness
-        data['hash'] = imagehash.phash(Image.open(absolute_path))   # add hash
+        # begin hash
+        print('hash2 - hash1: {}'.format(imagehash.phash(Image.open(absolute_path)) - imagehash.phash(Image.open('white.jpg'))))
+        data['hash'] = imagehash.phash(Image.open(absolute_path)) - imagehash.phash(Image.open('white.jpg'))
+        # end hash
         doc_ref.set(data)
         is_inserted = True
     else:
