@@ -1,10 +1,12 @@
 import csv
 import datetime
+import imagehash
 import io
 import ntpath
 import os
 import yaml
 
+from PIL import Image
 from time import sleep
 
 # Imports the Google Cloud client library
