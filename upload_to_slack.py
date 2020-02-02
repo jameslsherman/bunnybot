@@ -38,9 +38,11 @@ def get_image():
         print(u'{} => {}'.format(result.id, result.to_dict()))
         print('\n')
         # begin add api
-        source_blob_name = result.to_dict()['username'] + '/' + result.id + '.jpg'
+        source_blob_name = result.to_dict(
+        )['username'] + '/' + result.id + '.jpg'
         destination_file_name = source_blob_name
-        copy_to_local(config['bucket_name'], source_blob_name, destination_file_name)
+        copy_to_local(config['bucket_name'], source_blob_name,
+                      destination_file_name)
         # end add api
 
     return result.to_dict()['username'], result.id
@@ -59,11 +61,8 @@ def copy_to_local(bucket_name, source_blob_name, destination_file_name):
     blob = bucket.blob(source_blob_name)
     blob.download_to_filename(destination_file_name)
 
-    print(
-        "Blob {} downloaded to {}.".format(
-            source_blob_name, destination_file_name
-        )
-    )
+    print("Blob {} downloaded to {}.".format(source_blob_name,
+                                             destination_file_name))
 
 
 #-----------------------------------------------------------------------
