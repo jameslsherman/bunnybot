@@ -7,6 +7,8 @@ import yaml
 from google.cloud import firestore
 import google.cloud.exceptions
 
+from google.cloud import storage
+
 # hardcoded values
 config = yaml.safe_load(open("config.yaml"))
 slack = yaml.safe_load(open("slack.yaml"))
@@ -36,27 +38,33 @@ def get_image():
     for result in results:
         print(u'{} => {}'.format(result.id, result.to_dict()))
         print('\n')
-        copy_to_local(result.to_dict()['username'], result.id)
+        # begin add api
+        source_blob_name = result.to_dict()['username'] + '/' + result.id + '.jpg'
+        destination_file_name = source_blob_name
+        copy_to_local(config['bucket_name'], source_blob_name, destination_file_name)
+        # end add api
 
     return result.to_dict()['username'], result.id
 
 
 #-----------------------------------------------------------------------
-def copy_to_local(username, image):
+def copy_to_local(bucket_name, source_blob_name, destination_file_name):
+    """Downloads a blob from the bucket."""
+    # bucket_name = "your-bucket-name"
+    # source_blob_name = "storage-object-name"
+    # destination_file_name = "local/path/to/file"
 
-    image_location = username + '/' + image + '.jpg'
+    storage_client = storage.Client()
 
-    if not os.path.exists(image_location):
-        # bash_command = 'sudo gsutil cp gs://' + config['bucket_name'] + '/' + image_location + ' ' + image_location
-        bash_command = 'sudo gsutil cp gs://' + config[
-            'bucket_name'] + '/' + image_location + ' ' + image_location
-        print(u'bash_command: {}'.format(bash_command))
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
 
-        process = subprocess.Popen(bash_command.split(),
-                                   stdout=subprocess.PIPE)
-        output, error = process.communicate()
-        print(u'output: {}'.format(output))
-        print(u'error: {}'.format(error))
+    print(
+        "Blob {} downloaded to {}.".format(
+            source_blob_name, destination_file_name
+        )
+    )
 
 
 #-----------------------------------------------------------------------
