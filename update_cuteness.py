@@ -15,7 +15,6 @@ def main():
 def update_cuteness():
 
     db = firestore.Client()
-
     docs = db.collection(u'images').where(u'rabbit_cuteness', u'==',
                                           0).stream()
     for doc in docs:
@@ -34,9 +33,8 @@ def update_cuteness():
 #-----------------------------------------------------------------------
 def update_posted_dttm():
 
-    db = firestore.Client()
-
     # Posted Dttm
+    db = firestore.Client()
     docs = db.collection(u'images').where(u'posted_dttm', u'>',
                                           datetime.datetime(2000, 1,
                                                             1)).stream()
