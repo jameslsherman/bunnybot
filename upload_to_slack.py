@@ -1,7 +1,6 @@
 import datetime
 import os.path
 import requests
-import subprocess
 import yaml
 
 from google.cloud import firestore
