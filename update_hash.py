@@ -19,7 +19,6 @@ def main():
 def update_hash():
 
     db = firestore.Client()
-    # docs = db.collection(u'images').where(u'hash', u'>', '').stream()
     docs = db.collection(u'images').stream()
     for doc in docs:
         print(u'{} => {}'.format(doc.id, doc.to_dict()))
@@ -27,25 +26,21 @@ def update_hash():
         try:
             if doc.to_dict()['hash'] > '':
                 print('do nothing')
-            else:
-                print('do something 1')
         except:
-            print('do something 2')
+            print('do something')
 
             doc_ref = db.collection(u'images').document(doc.id)
             destination_file_name = os.path.abspath(doc.to_dict()['username'] + '/' + doc.id + '.jpg')
             try:
-                doc_ref.set({'hash': format(imagehash.phash(Image.open(destination_file_name)))}, merge=True)
+                hash = format(imagehash.phash(Image.open(destination_file_name)))
             except:
                 source_blob_name = doc.to_dict()['username'] + '/' + doc.id + '.jpg'
                 copy_to_local(config['bucket_name'], source_blob_name, destination_file_name)
-                doc_ref.set({'hash': format(imagehash.phash(Image.open(destination_file_name)))}, merge=True)
+                hash = format(imagehash.phash(Image.open(destination_file_name)))
+
+            doc_ref.set({'hash': hash}, merge=True)
 
         break
-
-        # update doc
-        # doc_ref = db.collection(u'images').document(doc.id)
-        # doc_ref.set({'hash': sum_rabbit_cuteness}, merge=True)
 
 
 #-----------------------------------------------------------------------
