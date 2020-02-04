@@ -9,6 +9,7 @@ from PIL import Image
 
 config = yaml.safe_load(open("config.yaml"))
 
+
 #-----------------------------------------------------------------------
 def main():
 
@@ -18,8 +19,8 @@ def main():
 #-----------------------------------------------------------------------
 def update_hash():
 
-    idx = 0
-    
+    debug = 0
+
     db = firestore.Client()
     docs = db.collection(u'images').stream()
     for doc in docs:
@@ -32,20 +33,25 @@ def update_hash():
             print('do something')
 
             doc_ref = db.collection(u'images').document(doc.id)
-            destination_file_name = os.path.abspath(doc.to_dict()['username'] + '/' + doc.id + '.jpg')
+            destination_file_name = os.path.abspath(doc.to_dict()['username'] +
+                                                    '/' + doc.id + '.jpg')
             try:
-                hash = format(imagehash.phash(Image.open(destination_file_name)))
+                hash = format(
+                    imagehash.phash(Image.open(destination_file_name)))
             except:
-                source_blob_name = doc.to_dict()['username'] + '/' + doc.id + '.jpg'
-                copy_to_local(config['bucket_name'], source_blob_name, destination_file_name)
-                hash = format(imagehash.phash(Image.open(destination_file_name)))
+                source_blob_name = doc.to_dict(
+                )['username'] + '/' + doc.id + '.jpg'
+                copy_to_local(config['bucket_name'], source_blob_name,
+                              destination_file_name)
+                hash = format(
+                    imagehash.phash(Image.open(destination_file_name)))
 
             doc_ref.set({'hash': hash}, merge=True)
 
-        if idx == 2:
+        if debug == 2:
             break
         else:
-            idx += 1
+            debug += 1
 
 
 #-----------------------------------------------------------------------
