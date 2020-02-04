@@ -18,6 +18,8 @@ def main():
 #-----------------------------------------------------------------------
 def update_hash():
 
+    idx = 0
+    
     db = firestore.Client()
     docs = db.collection(u'images').stream()
     for doc in docs:
@@ -40,7 +42,10 @@ def update_hash():
 
             doc_ref.set({'hash': hash}, merge=True)
 
-        break
+        if idx == 2:
+            break
+        else:
+            idx += 1
 
 
 #-----------------------------------------------------------------------
