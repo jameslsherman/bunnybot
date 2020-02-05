@@ -1,6 +1,7 @@
 import google.cloud.exceptions
 import imagehash
 import os
+import pathlib
 import yaml
 
 from google.cloud import firestore
@@ -35,23 +36,25 @@ def update_hash():
             doc_ref = db.collection(u'images').document(doc.id)
             destination_file_name = os.path.abspath(doc.to_dict()['username'] +
                                                     '/' + doc.id + '.jpg')
-            try:
+            if pathlib.Path(destination_file_name).exists():
                 hash = format(
                     imagehash.phash(Image.open(destination_file_name)))
-            except:
+                doc_ref.set({'hash': hash}, merge=True)
+            else:
                 source_blob_name = doc.to_dict(
                 )['username'] + '/' + doc.id + '.jpg'
-                copy_to_local(config['bucket_name'], source_blob_name,
-                              destination_file_name)
-                hash = format(
-                    imagehash.phash(Image.open(destination_file_name)))
+                is_copied = copy_to_local(config['bucket_name'],
+                                          source_blob_name,
+                                          destination_file_name)
+                if is_copied:
+                    hash = format(
+                        imagehash.phash(Image.open(destination_file_name)))
+                    doc_ref.set({'hash': hash}, merge=True)
 
-            doc_ref.set({'hash': hash}, merge=True)
-
-        if debug == 2:
-            break
-        else:
-            debug += 1
+        # if debug == 2:
+        #     break
+        # else:
+        #     debug += 1
 
 
 #-----------------------------------------------------------------------
@@ -65,10 +68,14 @@ def copy_to_local(bucket_name, source_blob_name, destination_file_name):
 
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(source_blob_name)
-    blob.download_to_filename(destination_file_name)
-
-    print("Blob {} downloaded to {}.".format(source_blob_name,
-                                             destination_file_name))
+    if blob.exists():
+        blob.download_to_filename(destination_file_name)
+        print("Blob {} downloaded to {}.".format(source_blob_name,
+                                                 destination_file_name))
+        return True
+    else:
+        print('Blob {} does not exist.'.format(source_blob_name))
+        return False
 
 
 #-----------------------------------------------------------------------
