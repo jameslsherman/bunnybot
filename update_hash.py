@@ -7,6 +7,7 @@ import yaml
 from google.cloud import firestore
 from google.cloud import storage
 from PIL import Image
+from time import sleep
 
 config = yaml.safe_load(open("config.yaml"))
 
@@ -40,6 +41,8 @@ def update_hash():
                 hash = format(
                     imagehash.phash(Image.open(destination_file_name)))
                 doc_ref.set({'hash': hash}, merge=True)
+                # firestore: can only update a single document once per second
+                sleep(1)
             else:
                 source_blob_name = doc.to_dict(
                 )['username'] + '/' + doc.id + '.jpg'
@@ -50,6 +53,8 @@ def update_hash():
                     hash = format(
                         imagehash.phash(Image.open(destination_file_name)))
                     doc_ref.set({'hash': hash}, merge=True)
+                    # firestore: can only update a single document once per second
+                    sleep(1)
 
         # if debug == 2:
         #     break
