@@ -57,15 +57,7 @@ def get_images(username, file):
     absolute_path = os.path.abspath(username + '/' + file)
     print('absolute_path: {}'.format(absolute_path))
 
-    is_inserted = load_image_into_memory(username, absolute_path)
-
-    if not is_inserted:
-        # delete file, if not labeled as rabbit
-        os.remove(absolute_path)
-    else:
-        # TODO: move to bucket storage
-        print('move')
-        # TODO: remove if not newest image
+    load_image_into_memory(username, absolute_path)
 
 
 #-----------------------------------------------------------------------
@@ -76,7 +68,7 @@ def load_image_into_memory(username, absolute_path):
         content = image_file.read()
         image = types.Image(content=content)
 
-        return perform_label_detection(username, absolute_path, image)
+        perform_label_detection(username, absolute_path, image)
 
 
 #-----------------------------------------------------------------------
@@ -96,7 +88,7 @@ def perform_label_detection(username, absolute_path, image):
     if annotations.web_entities:
         print_annotations(annotations)
         # What if no web_entities?
-        return insert_annotations(username, absolute_path, image, annotations)
+        insert_annotations(username, absolute_path, image, annotations)
 
     # exit()  # debug
 
@@ -145,15 +137,11 @@ def insert_annotations(username, absolute_path, image, annotations):
         # end hash
         doc_ref.set(data)
         upload_to_storage(config['bucket_name'], absolute_path, username + '/' + document_name + '.jpg')
-        is_inserted = True
     else:
         delete_from_db(document_name)
         delete_from_storage(config['bucket_name'], username + '/' + document_name + '.jpg')
-        # tries to delete it twice
-        # delete_local(absolute_path)
-        is_inserted = False
+        delete_local(absolute_path)
 
-    return is_inserted
     # firestore: can only update a single document once per second
     # sleep(1)
 
@@ -211,6 +199,7 @@ def delete_local(absolute_path):
 
     try:
         if os.path.exists(absolute_path):
+            # TODO: Do not delete if only one file in directory
             os.remove(absolute_path)
             print("Document {} deleted locally.".format(absolute_path))
         else:
