@@ -78,7 +78,14 @@ def post_image(username, image):
         'channels': (None, slack['channels']),
     }
 
-    r = requests.post(url, headers=headers, files=files)
+    s = requests.Session()
+    retries = Retry(total=5,
+                    backoff_factor=1,
+                    status_forcelist=[502, 503, 504])
+    s.mount('http://', HTTPAdapter(max_retries=retries))
+
+    # r = requests.post(url, headers=headers, files=files)
+    r = s.post(url, headers=headers, files=files, timeout=5)
 
     if r.status_code != 200:
         raise ValueError(
