@@ -13,6 +13,8 @@ from time import sleep
 from google.cloud import firestore
 import google.cloud.exceptions
 
+from google.cloud import storage
+
 from google.cloud import vision
 from google.cloud.vision import types
 
@@ -144,16 +146,55 @@ def insert_annotations(username, absolute_path, image, annotations):
         doc_ref.set(data)
         is_inserted = True
     else:
-        try:
-            # delete documents inserted during testing
-            db.collection(u'images').document(document_name).delete()
-        except:
-            print('Document not found')
+        delete_from_db(document_name)
+        delete_from_storage(config['bucket_name'], username + '/' + document_name + '.jpg')
+        delete_local(absolute_path)
         is_inserted = False
 
     return is_inserted
     # firestore: can only update a single document once per second
     # sleep(1)
+
+
+#-----------------------------------------------------------------------
+def delete_from_db(document_name):
+
+    try:
+        db = firestore.Client()
+        db.collection(u'images').document(document_name).delete()
+        print("Document {} deleted in DB.".format(document_name))
+    except:
+        print('Document {} not found in DB.'.format(document_name))
+
+
+#-----------------------------------------------------------------------
+def delete_from_storage(bucket_name, blob_name):
+    """Deletes a blob from the bucket."""
+    # bucket_name = "your-bucket-name"
+    # blob_name = "your-object-name"
+
+    try:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+
+        blob = bucket.blob(blob_name)
+        blob.delete()
+        print("Document {} deleted in storage.".format(blob_name))
+    except:
+        print('Document {} not found in storage.'.format(blob_name))
+
+
+#-----------------------------------------------------------------------
+def delete_local(absolute_path):
+
+    try:
+        if os.path.exists(absolute_path):
+            os.remove(absolute_path)
+            print("Document {} deleted locally.".format(absolute_path))
+        else:
+            print('Document {} not found locally.'.format(absolute_path))
+    except:
+        print('Document {} not found locally.'.format(absolute_path))
 
 
 #-----------------------------------------------------------------------
