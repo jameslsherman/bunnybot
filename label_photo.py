@@ -149,7 +149,8 @@ def insert_annotations(username, absolute_path, image, annotations):
     else:
         delete_from_db(document_name)
         delete_from_storage(config['bucket_name'], username + '/' + document_name + '.jpg')
-        delete_local(absolute_path)
+        # tries to delete it twice
+        # delete_local(absolute_path)
         is_inserted = False
 
     return is_inserted
