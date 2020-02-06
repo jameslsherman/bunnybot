@@ -144,6 +144,7 @@ def insert_annotations(username, absolute_path, image, annotations):
         data['hash'] = format(imagehash.phash(Image.open(absolute_path)))
         # end hash
         doc_ref.set(data)
+        upload_to_storage(config['bucket_name'], absolute_path, username + '/' + document_name + '.jpg')
         is_inserted = True
     else:
         delete_from_db(document_name)
@@ -154,6 +155,26 @@ def insert_annotations(username, absolute_path, image, annotations):
     return is_inserted
     # firestore: can only update a single document once per second
     # sleep(1)
+
+
+#-----------------------------------------------------------------------
+def upload_to_storage(bucket_name, source_file_name, destination_blob_name):
+    """Uploads a file to the bucket."""
+    # bucket_name = "your-bucket-name"
+    # source_file_name = "local/path/to/file"
+    # destination_blob_name = "storage-object-name"
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
+
+    print(
+        "File {} uploaded to {}.".format(
+            source_file_name, destination_blob_name
+        )
+    )
 
 
 #-----------------------------------------------------------------------
