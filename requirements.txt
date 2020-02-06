@@ -1,4 +1,5 @@
 google-cloud-firestore==1.6.0
+google-cloud-storage==1.23.0
 google-cloud-vision==0.41.0
 ImageHash==4.0
 instagram-scraper==1.7.1
