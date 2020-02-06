@@ -1,7 +1,11 @@
 import datetime
 import os.path
 import requests
+import socket
 import yaml
+
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 from google.cloud import firestore
 import google.cloud.exceptions
