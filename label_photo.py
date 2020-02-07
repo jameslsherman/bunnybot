@@ -129,21 +129,79 @@ def insert_annotations(username, absolute_path, image, annotations):
             if entity.description == 'Rabbit' or entity.description == 'Cuteness':
                 sum_rabbit_cuteness += entity.score
 
-    if sum_rabbit_cuteness > 0:
+    data['hash'] = format(imagehash.phash(Image.open(absolute_path)))
+    print('hash: {}'.format(data['hash']))
+    is_identical = find_identical_hash(data['hash'])
+    is_greater = find_greater_than_hash(data['hash'])
+    is_less = find_less_than_hash(data['hash'])
+    exit() # debug
+
+    if sum_rabbit_cuteness > 0 and not (is_identical):
         data['rabbit_cuteness'] = sum_rabbit_cuteness
-        # begin hash
-        print('hash: {}'.format(imagehash.phash(Image.open(absolute_path))))
-        data['hash'] = format(imagehash.phash(Image.open(absolute_path)))
-        # end hash
         doc_ref.set(data)
         upload_to_storage(config['bucket_name'], absolute_path, username + '/' + document_name + '.jpg')
-    else:
-        delete_from_db(document_name)
-        delete_from_storage(config['bucket_name'], username + '/' + document_name + '.jpg')
-        delete_local(absolute_path)
+    # else:
+    #     delete_from_db(document_name)
+    #     delete_from_storage(config['bucket_name'], username + '/' + document_name + '.jpg')
+    #     delete_local(absolute_path)
 
     # firestore: can only update a single document once per second
     # sleep(1)
+
+
+#-----------------------------------------------------------------------
+def find_identical_hash(hash):
+
+    db = firestore.Client()
+    docs = db.collection(u'images').where(u'hash', u'==', hash).limit(1).stream()
+
+    is_identical = False
+    for doc in docs:
+        print('\n')
+        print(u'Identical hash {} => {}'.format(doc.id, doc.to_dict()))
+        print('hash: {}'.format(doc.to_dict()['hash']))
+        is_identical = True
+
+    return is_identical
+
+
+#-----------------------------------------------------------------------
+def find_greater_than_hash(hash):
+
+    db = firestore.Client()
+    docs = db.collection('images').where('hash', u'>', hash).order_by('hash').limit(1).stream()
+    # , direction=firestore.Query.DESCENDING
+
+    is_greater = False
+    for doc in docs:
+        print('\n')
+        print(u'Greater than hash {} => {}'.format(doc.id, doc.to_dict()))
+        print('hash: {}'.format(doc.to_dict()['hash']))
+        print('doc.to_dict - hash: {}'.format(doc.to_dict()['hash'] - hash))
+        if (doc.to_dict()['hash'] - hash) < 5:
+            print('doc.to_dict - hash: {}'.format(doc.to_dict()['hash'] - hash))
+            is_greater = True
+
+    return is_greater
+
+
+#-----------------------------------------------------------------------
+def find_less_than_hash(hash):
+
+    db = firestore.Client()
+    docs = db.collection('images').where('hash', u'<', hash).order_by('hash', direction=firestore.Query.DESCENDING).limit(1).stream()
+
+    is_less = False
+    for doc in docs:
+        print('\n')
+        print(u'Less than hash {} => {}'.format(doc.id, doc.to_dict()))
+        print('hash: {}'.format(doc.to_dict()['hash']))
+        print('hash - doc.to_dict: {}'.format(hash - doc.to_dict()['hash']))
+        if (hash - doc.to_dict()['hash']) < 5:
+            print('hash - doc.to_dict: {}'.format(hash - doc.to_dict()['hash']))
+            is_less = True
+
+    return is_less
 
 
 #-----------------------------------------------------------------------
