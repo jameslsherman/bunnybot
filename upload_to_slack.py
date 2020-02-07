@@ -44,7 +44,7 @@ def get_image():
         # begin add api
         source_blob_name = result.to_dict(
         )['username'] + '/' + result.id + '.jpg'
-        destination_file_name = config['upload_to_slack'] + '/' + result.id + '.jpg'
+        destination_file_name = config['upload_directory'] + '/' + result.id + '.jpg'
         copy_to_local(config['bucket_name'], source_blob_name,
                       destination_file_name)
         # end add api
@@ -72,7 +72,7 @@ def copy_to_local(bucket_name, source_blob_name, destination_file_name):
 #-----------------------------------------------------------------------
 def post_image(username, image):
 
-    image_location = config['upload_to_slack'] + '/' + image + '.jpg'
+    image_location = config['upload_directory'] + '/' + image + '.jpg'
 
     url = slack['api_url'] + 'files.upload'
     headers = {'Authorization': 'Bearer ' + slack['oauth_access_token']}
