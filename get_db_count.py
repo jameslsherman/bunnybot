@@ -10,18 +10,18 @@ config = yaml.safe_load(open("config.yaml"))
 #-----------------------------------------------------------------------
 def main():
 
-    list_docs()
-    # list_blobs(config['bucket_name'])
+    # list_docs()
+    list_blobs(config['bucket_name'])  # 1125
 
 #-----------------------------------------------------------------------
 def list_docs():
 
     db = firestore.Client()
 
-    docs = db.collection('images').where(u'hash', u'>', '').stream()  # 1100
-    # docs = db.collection('images').where(u'rabbit_cuteness', u'>', 0).stream()  # 1082
-    # docs = db.collection('images').where(u'rabbit_cuteness', u'==', 0).stream()  # 18
-    # docs = db.collection('images').where(u'username', u'>', '').stream()  # 1100
+    # docs = db.collection('images').where(u'hash', u'>', '').stream()  # 1125
+    # docs = db.collection('images').where(u'rabbit_cuteness', u'>', 0).stream()  # 1100
+    docs = db.collection('images').where(u'rabbit_cuteness', u'==', 0).stream()  # 25
+    # docs = db.collection('images').where(u'username', u'>', '').stream()  # 1125
 
     # db.collection(u'images').document(u'32824402_1034460390047593_7552867768618450944_n').delete()
     # db.collection(u'images').document(u'36981782_1981859065459485_5165202591579111424_n').delete()
