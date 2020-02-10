@@ -28,7 +28,7 @@ def main():
             # delete near matches
             if (hash2 - hash1) < 5:
                 delete_document(unique_files[key])
-                delete_file(unique_files[key])
+                delete_from_storage(unique_files[key])
 
         prev_file = unique_files[key]
 
@@ -49,7 +49,7 @@ def scan_directory_for_images():
             if str(hash) in unique_files:
                 print('delete: {}'.format(file))
                 delete_document(file)
-                delete_file(file)
+                delete_from_storage(file)
             else:
                 print('unique: {}'.format(file))
                 unique_files[str(hash)] = file
@@ -73,7 +73,7 @@ def delete_document(file):
 
 
 #-----------------------------------------------------------------------
-def delete_file(file):
+def delete_from_storage(file):
 
     storage_client = storage.Client()
     bucket = storage_client.bucket(config['bucket_name'])

@@ -14,16 +14,19 @@ def get_bunny_image():
     query = images_ref.where('rabbit_cuteness','<=',0)
     results = query.stream()
 
+    debug = 1
     for result in results:
-        print(u'{} => {}'.format(result.id, result.to_dict()))
+        print(u'{} => {}'.format(debug, result.id))
+        print(u'{}'.format(result.to_dict()))
         print('\n')
-        # delete_photo(config['bucket_name'],'')
+        debug += 1
+        # delete_from_storage(config['bucket_name'],'')
 
     return result.to_dict()['username'], result.id
 
 
 #-----------------------------------------------------------------------
-def delete_photo(bucket_name, blob_name):
+def delete_from_storage(bucket_name, blob_name):
     """Deletes a blob from the bucket."""
     # bucket_name = "your-bucket-name"
     # blob_name = "your-object-name"

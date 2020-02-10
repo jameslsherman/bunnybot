@@ -19,7 +19,7 @@ def scan_directory_for_images():
         if file.endswith('.jpg'):
             # print('delete: {}'.format(file))
             delete_document(file)
-            delete_file(file)
+            delete_from_storage(file)
 
 #-----------------------------------------------------------------------
 def delete_document(file):
@@ -36,7 +36,7 @@ def delete_document(file):
         print('Document not found')
 
 #-----------------------------------------------------------------------
-def delete_file(file):
+def delete_from_storage(file):
 
     storage_client = storage.Client()
 
