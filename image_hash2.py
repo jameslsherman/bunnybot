@@ -16,6 +16,8 @@ config = yaml.safe_load(open("config.yaml"))
 #-----------------------------------------------------------------------
 def main():
 
+    # TODO: delete all images in upload directory
+    # TODO: download all images sent to slack
     image_filenames = find_exact_images()
     find_similar_images(image_filenames)
 
@@ -32,7 +34,7 @@ def find_exact_images():
             # hash = imagehash.average_hash(Image.open(config['upload_directory'] + '/' + file))
             hash = imagehash.phash(Image.open(config['upload_directory'] + '/' + file))
 
-            # delete exact matches
+            # delete exact images
             if str(hash) in image_filenames:
                 print('delete: {}'.format(file))
                 username = get_username(file)
@@ -56,7 +58,7 @@ def find_similar_images(image_filenames):
         hash2 = imagehash.phash(Image.open(config['upload_directory'] + '/' + img2))
 
         debug += 1
-        # delete similar matches
+        # delete similar images
         print('{} => hash2 - hash1: {}'.format(debug, hash2 - hash1))
         if (hash2 - hash1) < 10:
             print('delete: {}'.format(img1))
